@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSM Group - Independent Admin Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-body: #071A16;
+      --bg-surface: #0D2821;
+      --bg-card: #14382E;
+      --primary: #0D2821;
+      --accent-green: #0F8B6D;
+      --accent-green-light: #19B58A;
+      --gold: #E7B85C;
+      --text-main: #FFFFFF;
+      --text-muted: #B8CEC5;
+      --border: #245344;
+      --danger: #EF4444;
+      --radius-lg: 16px;
+      --radius-md: 10px;
+      --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.45);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Hind Siliguri', sans-serif; }
+    html, body {
+      width: 100%; min-height: 100vh;
+      font-family: 'Hind Siliguri', sans-serif;
+      background-color: var(--bg-body); color: var(--text-main);
+      line-height: 1.5; font-weight: 500;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font-family: inherit; font-size: 15px; }
+        .admin-header {
+      width: 100%; background: var(--bg-surface);
+      border-bottom: 2px solid var(--border);
+      padding: 18px 24px; display: flex; align-items: center;
+      justify-content: space-between; box-shadow: var(--shadow-lg);
+      position: sticky; top: 0; z-index: 1000;
+    }
+    .brand-box { display: flex; align-items: center; gap: 14px; }
+    .brand-logo {
+      width: 48px; height: 48px; border-radius: 14px; object-fit: cover;
+      border: 2px solid var(--gold);
+    }
+    .brand-name {
+      font-weight: 800; font-size: 22px; color: #FFFFFF; letter-spacing: -0.3px;
+    }
+    .brand-name span { color: var(--gold); }
+        .admin-container {
+      width: 100%; max-width: 1200px; margin: 24px auto; padding: 16px;
+    }
+    .card {
+      background: var(--bg-surface); border-radius: var(--radius-lg); padding: 24px;
+      border: 2px solid var(--border); box-shadow: var(--shadow-lg);
+      margin-bottom: 24px; color: #FFFFFF; width: 100%;
+    }
+    .stat-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;
+    }
+    @media (min-width: 768px) {
+      .stat-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .stat-box {
+      background: var(--bg-body); border: 2px solid var(--border); border-radius: 14px;
+      padding: 20px; text-align: center; color: #FFF;
+    }
+        .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 15px; font-weight: 700;
+      margin-bottom: 8px; color: var(--text-muted);
+    }
+    .form-control {
+      width: 100%; padding: 14px 16px; border-radius: 12px;
+      border: 2px solid var(--border); font-size: 15px;
+      background: var(--bg-body); color: #FFF; font-weight: 500;
+    }
+    .form-control:focus { outline: none; border-color: var(--accent-green-light); }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 22px; border-radius: 12px; font-weight: 800;
+      font-size: 16px; border: none; cursor: pointer; width: 100%; transition: 0.15s;
+    }
+    .btn:active { opacity: 0.85; }
+    .btn-primary { background: linear-gradient(90deg, var(--accent-green) 0%, var(--accent-green-light) 100%); color: #FFF; }
+    .btn-accent { background: linear-gradient(90deg, #D97706 0%, var(--gold) 100%); color: #050E1D; }
+    .btn-outline { background: var(--bg-card); color: #FFFFFF; border: 2px solid var(--accent-green-light); }
+    .btn-slim {
+      padding: 8px 14px; font-size: 13px; font-weight: 700;
+      border-radius: 10px; width: auto; display: inline-flex;
+      align-items: center; gap: 6px; cursor: pointer; border: none;
+    }
+        .gallery-preview-box {
+      display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;
+    }
+    .gallery-preview-box img {
+      width: 75px; height: 75px; object-fit: cover; border-radius: 10px;
+      border: 2px solid var(--gold);
+    }
+    .serial-item-card {
+      border: 2px solid var(--border); border-radius: 14px; padding: 18px;
+      margin-bottom: 14px; background: var(--bg-body); display: flex;
+      flex-direction: column; gap: 8px;
+    }
+    @media (min-width: 768px) {
+      .serial-item-card { flex-direction: row; align-items: center; justify-content: space-between; }
+    }
+        .admin-page { display:none; }
+    .admin-page.active { display:block; }
+    .page-nav { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; margin-bottom:20px; }
+    @media(min-width:700px){.page-nav{grid-template-columns:repeat(3,minmax(0,1fr));}}
+    .page-nav .btn { min-height:54px; }
+    .back-row { display:flex; gap:10px; align-items:center; margin-bottom:16px; }
+    .back-row h2 { color:var(--gold); font-size:20px; }
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(2, 6, 15, 0.88);
+      z-index: 3000; display: none; align-items: center; justify-content: center;
+      padding: 20px; backdrop-filter: blur(6px);
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal-box {
+      background: var(--bg-surface); border-radius: 20px; max-width: 440px; width: 100%;
+      padding: 28px 22px; text-align: center; box-shadow: var(--shadow-lg);
+      border: 2px solid var(--border); border-top: 6px solid var(--accent-green-light); color: #FFF;
+      animation: modalPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    @keyframes modalPop {
+      0% { transform: scale(0.9); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <div class="brand-box">
+      <img src="https://i.ibb.co.com/5Wc8DJjz/Messenger-creation-0671974-A-A83-D-4-F61-A39-E-243374-AC1-E33.jpg" alt="RSM Group" class="brand-logo">
+      <div class="brand-name">RSM <span>Admin Panel</span></div>
+    </div>
+    <button class="btn-slim btn-outline" onclick="window.location.reload()">🔄 রিফ্রেশ ডাটা</button>
+  </header>
+    <main class="admin-container">
+    <section class="card" id="adminLoginCard" style="max-width:480px;margin:30px auto;">
+      <h2 style="color:var(--gold);margin-bottom:12px;">অ্যাডমিন লগইন</h2>
+      <p style="color:var(--text-muted);margin-bottom:16px;">Firebase Auth-এর অ্যাডমিন ইমেইল ও পাসওয়ার্ড দিয়ে প্রবেশ করুন।</p>
+      <div class="form-group"><label>অ্যাডমিন ইমেইল</label><input class="form-control" id="adminEmail" type="email" autocomplete="username"></div>
+      <div class="form-group"><label>পাসওয়ার্ড</label><input class="form-control" id="adminPassword" type="password" autocomplete="current-password"></div>
+      <button class="btn btn-primary" onclick="adminLogin()">লগইন করুন</button>
+      <p id="adminLoginMessage" style="color:var(--danger);margin-top:12px;"></p>
+    </section>
+    <div id="adminDashboardContent" style="display:none;">
+    <section class="admin-page active" id="pageDashboard">
+    <!-- পরিসংখ্যান ওভারভিউ -->
+    <div class="stat-grid">
+      <div class="stat-box" role="button" tabindex="0" onclick="showAllUsers()" style="cursor:pointer" title="সকল ইউজার দেখুন">
+        <div style="font-size:14px; color:var(--text-muted); font-weight:700;">মোট ইউজার</div>
+        <div id="adminTotalUsersCount" style="font-size:24px; font-weight:800; color:var(--accent-green-light);">0</div>
+      </div>
+      <div class="stat-box" role="button" tabindex="0" onclick="showPage('orders')" style="cursor:pointer">
+        <div style="font-size:14px; color:var(--text-muted); font-weight:700;">মোট অর্ডার</div>
+        <div id="adminTotalOrdersCount" style="font-size:24px; font-weight:800; color:var(--gold);">0</div>
+      </div>
+      <div class="stat-box" role="button" tabindex="0" onclick="showAllProducts()" style="cursor:pointer" title="সকল পণ্য দেখুন">
+        <div style="font-size:14px; color:var(--text-muted); font-weight:700;">মোট পণ্য</div>
+        <div id="adminTotalProductsCount" style="font-size:24px; font-weight:800; color:var(--accent-green-light);">0</div>
+      </div>
+      <div class="stat-box" role="button" tabindex="0" onclick="showPage('bannerForm')" style="cursor:pointer">
+        <div style="font-size:14px; color:var(--text-muted); font-weight:700;">নোটিশ ব্যানার</div>
+        <div id="adminTotalBannersCount" style="font-size:24px; font-weight:800; color:var(--gold);">0</div>
+      </div>
+    </div>
+    <div class="page-nav">
+      <button class="btn btn-outline" onclick="showPage('productForm')">➕ পণ্য পাবলিশ</button>
+      <button class="btn btn-outline" onclick="showPage('bannerForm')">📢 ব্যানার ম্যানেজ</button>
+      <button class="btn btn-outline" onclick="showPage('products')">📦 সকল পণ্য</button>
+      <button class="btn btn-outline" onclick="showPage('users')">👥 সকল ইউজার</button>
+      <button class="btn btn-outline" onclick="showPage('orders')">🧾 সকল অর্ডার</button>
+      <button class="btn btn-outline" onclick="showPage('withdrawals')">💸 উইথড্র রিকোয়েস্ট</button>
+    </div>
+
+    </div>
+    <section class="admin-page" id="pageProductForm">
+      <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('dashboard')">← ড্যাশবোর্ড</button><h2>পণ্য পাবলিশ / এডিট</h2></div>
+    <!-- পণ্য আপলোড বা এডিট ফর্ম (গ্যালারি থেকে সরাসরি ছবি নির্বাচন) -->
+    <div class="card">
+      <h3 id="adminProductFormTitle" style="font-size:20px; font-weight:800; color:var(--gold); margin-bottom:16px;">🛍️ নতুন পণ্য আপলোড করুন (গ্যালারি থেকে ১ থেকে ১০টি ছবি)</h3>
+      <form id="adminProductForm" onsubmit="handleAdminSaveProduct(event)">
+        <input type="hidden" id="admEditingProductId" value="">
+        <div class="form-group"><label>পণ্যের নাম (বাংলা) *</label><input type="text" class="form-control" id="admProdNameBn" required placeholder="যেমন: প্রিমিয়াম পাঞ্জাবি"></div>
+        <div class="form-group"><label>Product Name (English) *</label><input type="text" class="form-control" id="admProdNameEn" required placeholder="e.g. Premium Panjabi"></div>
+        <div class="form-group"><label>দাম (৳) *</label><input type="number" class="form-control" id="admProdPrice" required placeholder="যেমন: 750"></div>
+        <div class="form-group"><label>এই পণ্য কিনলে বোনাস (৳)</label><input type="number" min="0" step="1" class="form-control" id="admProdBonus" value="0" placeholder="যেমন: 20"></div>
+        <div class="form-group"><label>পণ্যের বিবরণ (বাংলা) *</label><textarea class="form-control" id="admProdDescBn" rows="2" required placeholder="পণ্যের বিবরণ লিখুন"></textarea></div>
+        <div class="form-group"><label>Product Description (English) *</label><textarea class="form-control" id="admProdDescEn" rows="2" required placeholder="Enter description"></textarea></div>
+        <div class="form-group">
+          <label>গ্যালারি থেকে ছবি সিলেক্ট করুন (সর্বনিম্ন ১টি, সর্বোচ্চ ১০টি ছবি একসাথে সিলেক্ট করতে পারবেন) *</label>
+          <input type="file" class="form-control" id="admProdImageFiles" accept="image/*" multiple onchange="previewSelectedImages(event)">
+          <div class="gallery-preview-box" id="imagePreviewContainer"></div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="btn btn-primary" id="admProdSubmitBtn">পণ্য পাবলিশ করুন</button>
+          <button type="button" class="btn btn-outline" id="admProdCancelBtn" style="display:none;" onclick="cancelEditProduct()">এডিট বাতিল</button>
+        </div>
+      </form>
+    </div>
+        </section>
+    <section class="admin-page" id="pageBannerForm">
+      <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('dashboard')">← ড্যাশবোর্ড</button><h2>ব্যানার ম্যানেজ</h2></div>
+    <!-- নোটিশ পেজে ব্যানার ছবি আপলোড ফর্ম (গ্যালারি থেকে সরাসরি) -->
+    <div class="card">
+      <h3 style="font-size:20px; font-weight:800; color:var(--gold); margin-bottom:16px;">📢 নোটিশ পেজে ব্যানার ছবি আপলোড করুন</h3>
+      <form id="adminBannerForm" onsubmit="handleAdminAddBanner(event)">
+        <div class="form-group">
+          <label>গ্যালারি থেকে ব্যানার ছবি সিলেক্ট করুন *</label>
+          <input type="file" class="form-control" id="admBannerFile" accept="image/*" required onchange="previewBannerImage(event)">
+          <div class="gallery-preview-box" id="bannerPreviewContainer"></div>
+        </div>
+        <button type="submit" class="btn btn-accent">নোটিশ পেজে ব্যানার যোগ করুন</button>
+      </form>
+    </div>
+        </section>
+    <section class="admin-page" id="pageProducts">
+      <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('dashboard')">← ড্যাশবোর্ড</button><h2>সকল পণ্য</h2></div>
+    <!-- সিরিয়াল অনুযায়ী পণ্য তালিকা (এডিট/ডিলিট) -->
+    <div class="card">
+      <h3 style="font-size:20px; font-weight:800; color:#FFF; margin-bottom:16px;">📦 পণ্যের সিরিয়াল তালিকা ও ম্যানেজমেন্ট</h3>
+      <div id="adminProductManageList"></div>
+    </div>
+        </section>
+    <section class="admin-page" id="pageUsers">
+      <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('dashboard')">← ড্যাশবোর্ড</button><h2>সকল ইউজার</h2></div>
+    <!-- সিরিয়াল অনুযায়ী ইউজার ও রেফার হিস্ট্রি -->
+    <div class="card">
+      <h3 style="font-size:20px; font-weight:800; color:#FFF; margin-bottom:16px;">👥 সকল ইউজারের সিরিয়াল তালিকা ও রেফার হিস্ট্রি</h3>
+      <div id="adminAllUsersList"></div>
+    </div>
+        <!-- গ্রাহকদের অর্ডারের সিরিয়াল তালিকা -->
+    </section>
+    <section class="admin-page" id="pageDetail">
+    <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('users')">← ফিরে যান</button><h2>বিস্তারিত তথ্য</h2></div>
+    <div class="card" id="adminDetailCard" style="display:block;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;"><h3 id="adminDetailTitle" style="color:var(--gold);">বিস্তারিত</h3><button class="btn-slim btn-outline" onclick="closeAdminDetail()">বন্ধ করুন</button></div>
+      <div id="adminDetailContent"></div>
+    </div>
+    </section>
+    <section class="admin-page" id="pageOrders">
+      <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('dashboard')">← ড্যাশবোর্ড</button><h2>সকল অর্ডার</h2></div>
+    <div class="card">
+      <h3 style="font-size:20px; font-weight:800; color:#FFF; margin-bottom:16px;">📦 গ্রাহকদের অর্ডারের সিরিয়াল তালিকা</h3>
+      <div id="adminAllOrdersList"></div>
+    </div>
+    </section>
+    <section class="admin-page" id="pageWithdrawals">
+      <div class="back-row"><button class="btn-slim btn-outline" onclick="showPage('dashboard')">← ড্যাশবোর্ড</button><h2>উইথড্র রিকোয়েস্ট</h2></div>
+    <div class="card">
+      <h3 style="font-size:20px;font-weight:800;color:var(--gold);margin-bottom:16px;">💸 উইথড্র রিকোয়েস্ট</h3>
+      <div id="adminWithdrawalsList"></div>
+    </div>
+    </section>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="customAlertModal">
+    <div class="modal-box">
+      <img src="https://i.ibb.co.com/5Wc8DJjz/Messenger-creation-0671974-A-A83-D-4-F61-A39-E-243374-AC1-E33.jpg" alt="RSM Group" style="width:60px; height:60px; border-radius:14px; border:2.5px solid var(--gold); object-fit:cover; margin-bottom:12px;">
+      <h3 id="customAlertTitle" style="font-size:18px; font-weight:800; color:#FFF; margin-bottom:8px;">Alert</h3>
+      <p id="customAlertMsg" style="font-size:15px; color:var(--text-muted); font-weight:500; margin-bottom:20px;"></p>
+      <button class="btn btn-primary" onclick="closeCustomAlert()">ঠিক আছে</button>
+    </div>
+  </div>
+  
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import { getAnalytics, isSupported } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+import { getFirestore, collection, doc, getDocs, getDoc, addDoc, setDoc, updateDoc, deleteDoc, query, where, orderBy, onSnapshot, runTransaction, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyATWMcdN_LSMJeAUq84zuujkA7v0B0gQlc",authDomain:"gsp-group-3ca34.firebaseapp.com",projectId:"gsp-group-3ca34",storageBucket:"gsp-group-3ca34.firebasestorage.app",messagingSenderId:"123828183643",appId:"1:123828183643:web:50890a115f10cb8e18557e",measurementId:"G-XRBWNXF4MP"};
+const app=getApps().length?getApps()[0]:initializeApp(firebaseConfig); const auth=getAuth(app), db=getFirestore(app);
+isSupported().then(ok=>{if(ok)getAnalytics(app)}).catch(()=>{});
+class QueryCompat {
+ constructor(name){this.name=name;this.filters=[];this.sort=null;this.mode='select';this.payload=null;this.docId=null;}
+ select(){return this;} eq(k,v){this.filters.push([k,'==',v]);return this;} order(k,o={}){this.sort=[k,o.ascending===false?'desc':'asc'];return this;}
+ insert(rows){this.mode='insert';this.payload=Array.isArray(rows)?rows:[rows];return this;} update(row){this.mode='update';this.payload=row;return this;} delete(){this.mode='delete';return this;}
+ async exec(){try{
+  if(this.mode==='insert'){
+   const out=[]; for(const row of this.payload){const refDoc=await addDoc(collection(db,this.name),{...row,created_at:row.created_at||new Date().toISOString(),updated_at:row.updated_at||new Date().toISOString()});out.push({id:refDoc.id,...row});}
+   return {data:out,error:null};
+  }
+  const snap=await getDocs(collection(db,this.name)); let rows=snap.docs.map(d=>({id:d.id,...d.data()}));
+  this.filters.forEach(([k,op,v])=>{rows=rows.filter(row=>{const actual=k==='id'?row.id:row[k];return op==='=='?String(actual??'')===String(v??''):false;});});
+  if(this.sort){const [key,dir]=this.sort;rows.sort((a,b)=>{const av=a[key]||'',bv=b[key]||'';return (av>bv?1:av<bv?-1:0)*(dir==='desc'?-1:1);});}
+  if(this.mode==='update'||this.mode==='delete'){
+   for(const row of rows){const r=doc(db,this.name,row.id); if(this.mode==='update')await updateDoc(r,{...this.payload,updated_at:new Date().toISOString()});else await deleteDoc(r);} return {data:null,error:null};
+  }
+  return {data:rows,error:null};
+ }catch(error){return {data:null,error};}}
+ then(resolve,reject){return this.exec().then(resolve,reject)}
+ async maybeSingle(){const r=await this.exec();return {data:r.data?.[0]||null,error:r.error};}
+ async single(){const r=await this.exec();return {data:r.data?.[0]||null,error:r.error};}
+}
+const client={auth:{signInWithPassword:async({email,password})=>{try{const c=await signInWithEmailAndPassword(auth,email,password);return {data:{user:c.user},error:null}}catch(error){return {data:null,error}}},signOut:async()=>{try{await signOut(auth);return {error:null}}catch(error){return {error}}},getSession:async()=>({data:{session:auth.currentUser?{user:auth.currentUser}:null},error:null}),onAuthStateChange:(cb)=>onAuthStateChanged(auth,(u)=>cb('SIGNED_IN',u))},
+ from:(name)=>new QueryCompat(name),
+ channel:(name)=>{const listeners=[];const channel={on:(event,opts,cb)=>{listeners.push({name:opts.table,cb});return channel;},subscribe:()=>{listeners.forEach(l=>{let q=collection(db,l.name);if(l.name==='orders'&&window.firebaseAuth?.currentUser)q=query(q,where('user_email','==',window.firebaseAuth.currentUser.email));onSnapshot(q,()=>l.cb(),err=>console.warn('Firebase live listener:',err.message));});return channel;}};return channel;},
+ rpc:async(name,args)=>{try{if(name==='rsm_admin_adjust_balance'){const uid=args.p_user_id,amount=Number(args.p_amount);await runTransaction(db,async tx=>{const r=doc(db,'users',uid),s=await tx.get(r);if(!s.exists())throw Error('ইউজার পাওয়া যায়নি');tx.update(r,{balance:Number(s.data().balance||0)+amount,updated_at:new Date().toISOString()});});return {error:null};}if(name==='rsm_admin_set_withdrawal_status'){const wref=doc(db,'withdrawals',args.p_withdrawal_id);const ws=await getDoc(wref);if(!ws.exists())throw Error('উইথড্র রিকোয়েস্ট পাওয়া যায়নি');const wd=ws.data();if(args.p_status==='Rejected'&&wd.status!=='Rejected'&&wd.status!=='Paid'&&wd.user_id){await runTransaction(db,async tx=>{const wr=await tx.get(wref);if(!wr.exists()||wr.data().status==='Rejected'||wr.data().status==='Paid')return;const ur=doc(db,'users',wd.user_id),us=await tx.get(ur);if(us.exists())tx.update(ur,{balance:Number(us.data().balance||0)+Number(wd.amount||0),updated_at:new Date().toISOString()});tx.update(wref,{status:'Rejected',updated_at:new Date().toISOString()});});}else{await updateDoc(wref,{status:args.p_status,updated_at:new Date().toISOString()});}return {error:null};}return {error:Error('Unknown Firebase action')}}catch(error){return {error}}}
+};
+window.firebaseApp=app;window.firebaseAuth=auth;window.firebaseDb=db;window.firebaseCompat=client;window.firebaseReady=Promise.resolve(client);window.firebaseReady=window.firebaseReady;
+window.firebaseCreateAccount=async(email,password)=>createUserWithEmailAndPassword(auth,email,password);window.firebaseSignOut=()=>signOut(auth);window.firebaseOnAuthStateChanged=cb=>onAuthStateChanged(auth,cb);window.firebaseDoc=doc;window.firebaseSetDoc=setDoc;window.firebaseGetDoc=getDoc;window.firebaseDbInstance=db;
+</script>  <script type="module">
+    await window.firebaseReady;
+    const sb = window.firebaseCompat;
+    let products = [], users = [], orders = [], banners = [], withdrawals = [];
+    let selectedProductImages = [], selectedBannerFile = null;
+    const $ = id => document.getElementById(id);
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    function alertBox(title,msg){ $("customAlertTitle").textContent=title; $("customAlertMsg").textContent=msg; $("customAlertModal").classList.add("show"); }
+    window.closeCustomAlert=()=> $("customAlertModal").classList.remove("show");
+
+    window.adminLogin = async function(){
+      $("adminLoginMessage").textContent = "লগইন হচ্ছে...";
+      const email=$("adminEmail").value.trim();
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ $("adminLoginMessage").textContent="সঠিক ইমেইল ঠিকানা লিখুন (যেমন: name@gmail.com)।"; return; }
+      const {data,error}=await sb.auth.signInWithPassword({email,password:$("adminPassword").value});
+      if(error){$("adminLoginMessage").textContent="লগইন হয়নি: "+error.message;return;}
+      const adminSnap=await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDbInstance,"admin_users",data.user.uid));
+      if(!adminSnap.exists()){
+        await sb.auth.signOut();
+        $("adminLoginMessage").textContent="এই অ্যাকাউন্ট অ্যাডমিন হিসেবে অনুমোদিত নয়।";
+        return;
+      }
+      $("adminLoginCard").style.display="none";
+      $("adminDashboardContent").style.display="block";
+      await loadAll();
+      subscribeRealtime();
+    };
+
+    async function loadAll(){
+      const results=await Promise.all([
+        sb.from("products").select("*").order("created_at",{ascending:false}),
+        sb.from("users").select("*").order("created_at",{ascending:false}),
+        sb.from("orders").select("*").order("created_at",{ascending:false}),
+        sb.from("banners").select("*").order("created_at",{ascending:false}),
+        sb.from("withdrawals").select("*").order("created_at",{ascending:false})
+      ]);
+      const names=["products","users","orders","banners","withdrawals"];
+      for(let i=0;i<results.length;i++){
+        if(results[i].error){console.error(names[i],results[i].error);alertBox("ডাটাবেস সমস্যা",names[i]+" লোড হয়নি: "+results[i].error.message);return;}
+      }
+      [products,users,orders,banners,withdrawals]=results.map(r=>r.data||[]);
+      render();
+    }
+    let adminRealtimeStarted=false, adminRefreshTimer=null;
+    function subscribeRealtime(){
+      if(adminRealtimeStarted) return;
+      adminRealtimeStarted=true;
+      ["products","users","orders","banners","withdrawals"].forEach(table=>{
+        sb.channel("rsm-admin-"+table).on("firestore",{table},()=>{
+          clearTimeout(adminRefreshTimer);
+          adminRefreshTimer=setTimeout(()=>loadAll(),180);
+        }).subscribe();
+      });
+    }
+    window.refreshAdminData=loadAll;
+    function render(){
+      $("adminTotalUsersCount").textContent=users.length;
+      $("adminTotalOrdersCount").textContent=orders.length;
+      $("adminTotalProductsCount").textContent=products.length;
+      $("adminTotalBannersCount").textContent=banners.length;
+      $("adminProductManageList").innerHTML=products.map((p,i)=>`<div class="serial-item-card"><div style="display:flex;align-items:center;gap:12px"><span>ক্রম #${i+1}</span><img src="${esc((p.images||[])[0]||"")}" style="width:52px;height:52px;object-fit:cover;border-radius:9px"><div><b>${esc(p.title_bn)}</b><div>৳${Number(p.price).toFixed(0)} · বোনাস ৳${Number(p.bonus_amount||0)}</div></div></div><div style="display:flex;gap:8px"><button class="btn-slim btn-outline" onclick="editProduct('${p.id}')">এডিট</button><button class="btn-slim" style="background:var(--danger);color:white" onclick="deleteProduct('${p.id}')">ডিলিট</button></div></div>`).join("")||"কোনো পণ্য নেই।";
+      $("adminAllUsersList").innerHTML=users.map((u,i)=>`<div class="serial-item-card" style="cursor:pointer" onclick="showUserHistory('${u.id}')"><div><b>ক্রম #${i+1} | ${esc(u.name||u.full_name||"নাম পাওয়া যায়নি")}</b><div>${esc(u.email||"")} · ${esc(u.phone||"")}</div><div>যোগ হয়েছে: ${u.created_at?new Date(u.created_at).toLocaleString("bn-BD"):"তথ্য নেই"}</div><small style="color:var(--accent-green-light)">এই ইউজারের সম্পূর্ণ অর্ডার/ইতিহাস দেখতে চাপ দিন</small></div><span>ইতিহাস দেখুন →</span></div>`).join("")||"কোনো ইউজার নেই।";
+      const visibleOrders=orders.filter(o=>!o.archived);
+      $("adminAllOrdersList").innerHTML=visibleOrders.map((o,i)=>`<div class="serial-item-card"><div><b>Order #${i+1} · ${esc(o.id)}</b><div>গ্রাহক: ${esc(o.user_name)} · ${esc(o.user_email||"Guest")}</div><div>পণ্য: ${esc(o.product_name)} · ৳${Number(o.amount||0)} · ${esc(o.payment_method)}</div><div>ফোন: ${esc(o.customer_phone||"")} · ঠিকানা: ${esc(JSON.stringify(o.address||{}))}</div><div>স্ট্যাটাস: <b>${esc(o.status)}</b> · ${new Date(o.created_at).toLocaleString("bn-BD")}</div>${o.confirmed_at?`<div>Confirm: ${new Date(o.confirmed_at.toDate?o.confirmed_at.toDate():o.confirmed_at).toLocaleString("bn-BD")} · মুছবে: ${new Date(o.expires_at?.toDate?o.expires_at.toDate():o.expires_at).toLocaleDateString("bn-BD")}</div>`:""}</div><div style="display:flex;gap:6px;flex-wrap:wrap"><select aria-label="অর্ডার স্ট্যাটাস" onchange="setOrderStatus('${o.id}',this.value)"><option value="" disabled selected>স্ট্যাটাস বদলান</option>${["Confirmed","Processing","Shipped","Delivered","Cancelled"].map(st=>`<option value="${st}">${st}</option>`).join("")}</select><button class="btn-slim btn-outline" onclick="archiveOrder('${o.id}')">Archive</button></div></div>`).join("")||"কোনো অর্ডার নেই।";
+      $("adminWithdrawalsList").innerHTML=withdrawals.map((w,i)=>`<div class="serial-item-card"><div><b>উইথড্র #${i+1} · ${esc(w.user_name)}</b><div>${esc(w.user_email)} · ৳${Number(w.amount).toFixed(2)}</div><div>${esc(w.payment_method)} · ${esc(w.account_number)}</div><div>স্ট্যাটাস: <b>${esc(w.status)}</b> · ${new Date(w.created_at).toLocaleString("bn-BD")}</div></div><div style="display:flex;gap:6px;flex-wrap:wrap">${w.status==="Pending"?`<button class="btn-slim btn-primary" onclick="setWithdrawalStatus('${w.id}','Approved')">অ্যাপ্রুভ</button><button class="btn-slim" style="background:var(--danger);color:white" onclick="setWithdrawalStatus('${w.id}','Rejected')">রিজেক্ট</button>`:"" }${w.status==="Approved"?`<button class="btn-slim btn-accent" onclick="setWithdrawalStatus('${w.id}','Paid')">পেমেন্ট সম্পন্ন</button>`:""}</div></div>`).join("")||"কোনো উইথড্র রিকোয়েস্ট নেই।";
+    }
+
+    // Firebase Storage ছাড়াই ছবি ছোট WebP Data URL হিসেবে Firestore-এ রাখা হয়।
+    async function uploadImage(file,folder){
+      if(!file) throw new Error("ছবি নির্বাচন করা হয়নি।");
+      if(!window.firebaseAuth || !window.firebaseAuth.currentUser) throw new Error("আগে Admin হিসেবে Login করুন।");
+      if(!file.type || !file.type.startsWith("image/")) throw new Error("শুধু JPG, PNG বা WebP ছবি নির্বাচন করুন।");
+      if(file.size > 15 * 1024 * 1024) throw new Error("মূল ছবিটি ১৫ MB-এর ছোট হতে হবে।");
+      const bitmap = await createImageBitmap(file);
+      let width=bitmap.width, height=bitmap.height;
+      const maxSide=1000;
+      if(Math.max(width,height)>maxSide){const scale=maxSide/Math.max(width,height);width=Math.round(width*scale);height=Math.round(height*scale);}
+      const canvas=document.createElement('canvas');canvas.width=width;canvas.height=height;
+      const ctx=canvas.getContext('2d');
+      // WebP transparency সমর্থন করে; fallback JPEG হলে সাদা background।
+      ctx.fillStyle='#ffffff';ctx.fillRect(0,0,width,height);ctx.drawImage(bitmap,0,0,width,height);bitmap.close?.();
+      let blob=null;
+      for(let quality=0.76;quality>=0.40;quality-=0.06){
+        blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));
+        if(blob && blob.size<=55*1024) break;
+      }
+      if(!blob) throw new Error("এই ছবিটি প্রসেস করা যায়নি। অন্য ছবি দিন।");
+      if(blob.type!=='image/webp'){
+        blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.58));
+      }
+      if(!blob || blob.size>55*1024) throw new Error("ছবিটি যথেষ্ট ছোট করা যায়নি। কম রেজোলিউশনের ছবি দিন।");
+      const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('ছবি পড়া যায়নি।'));reader.readAsDataURL(blob);});
+      return dataUrl;
+    }
+    window.previewSelectedImages=function(e){
+      selectedProductImages=Array.from(e.target.files||[]);
+      $("imagePreviewContainer").innerHTML="";
+      selectedProductImages.slice(0,10).forEach(file=>{const img=document.createElement("img");img.src=URL.createObjectURL(file);$("imagePreviewContainer").appendChild(img);});
+      if(selectedProductImages.length>10){selectedProductImages=[];e.target.value="";alertBox("সতর্কতা","সর্বোচ্চ ১০টি ছবি দিন।");}
+    };
+    window.previewBannerImage=function(e){
+      selectedBannerFile=e.target.files?.[0]||null;
+      $("bannerPreviewContainer").innerHTML="";
+      if(selectedBannerFile){const img=document.createElement("img");img.src=URL.createObjectURL(selectedBannerFile);$("bannerPreviewContainer").appendChild(img);}
+    };
+    window.handleAdminSaveProduct=async function(e){
+      e.preventDefault();
+      const editId=$("admEditingProductId").value;
+      const submitBtn=$("admProdSubmitBtn"); submitBtn.disabled=true; submitBtn.textContent="প্রস্তুত হচ্ছে...";
+      try{
+        if(!editId && !selectedProductImages.length) throw new Error("পণ্যের কমপক্ষে ১টি ছবি নির্বাচন করুন।");
+        if(selectedProductImages.length>10) throw new Error("সর্বোচ্চ ১০টি ছবি নির্বাচন করুন।");
+        let imageUrls=[];
+        if(editId){const existing=products.find(p=>p.id===editId);imageUrls=[...(existing?.images||[])];}
+        for(let i=0;i<selectedProductImages.length;i++){submitBtn.textContent=`ছবি ছোট করা হচ্ছে ${i+1}/${selectedProductImages.length}`;imageUrls.push(await uploadImage(selectedProductImages[i],"products"));}
+        if(imageUrls.reduce((n,url)=>n+url.length,0)>780000) throw new Error("ছবিগুলোর মোট আকার বেশি। ১০টির বদলে কম ছবি দিন বা ছোট ছবি নির্বাচন করুন।");
+        if(!imageUrls.length) throw new Error("কমপক্ষে একটি ছবি নির্বাচন করুন।");
+        submitBtn.textContent="Firebase-এ পণ্য সংরক্ষণ হচ্ছে...";
+        const row={title_bn:$("admProdNameBn").value.trim(),title_en:$("admProdNameEn").value.trim(),price:Number($("admProdPrice").value),bonus_amount:Math.max(0,Number($("admProdBonus").value||0)),desc_bn:$("admProdDescBn").value.trim(),desc_en:$("admProdDescEn").value.trim(),images:imageUrls,rating:5,reviews:1,is_active:true,updated_at:new Date().toISOString()};
+        const result=editId?await sb.from("products").update(row).eq("id",editId):await sb.from("products").insert([row]);
+        if(result.error) throw result.error;
+        $("adminProductForm").reset();$("admEditingProductId").value="";$("imagePreviewContainer").innerHTML="";selectedProductImages=[];
+        $("adminProductFormTitle").textContent="🛍️ নতুন পণ্য আপলোড করুন";$("admProdSubmitBtn").textContent="পণ্য পাবলিশ করুন";$("admProdCancelBtn").style.display="none";
+        await loadAll();alertBox("সফল","পণ্য Firebase-এ সংরক্ষিত হয়েছে। ইউজার প্যানেলে স্বয়ংক্রিয়ভাবে আপডেট হবে।");
+      }catch(err){console.error(err);alertBox("সমস্যা",err.message||"পণ্য সংরক্ষণ করা যায়নি।");}
+      finally{submitBtn.disabled=false;submitBtn.textContent=$("admEditingProductId").value?"আপডেট করুন":"পণ্য পাবলিশ করুন";}
+    };
+    window.editProduct=function(id){
+      const p=products.find(x=>x.id===id);if(!p)return;
+      $("admEditingProductId").value=p.id;$("admProdNameBn").value=p.title_bn;$("admProdNameEn").value=p.title_en;$("admProdPrice").value=p.price;$("admProdBonus").value=Number(p.bonus_amount||0);$("admProdDescBn").value=p.desc_bn;$("admProdDescEn").value=p.desc_en;
+      selectedProductImages=[];$("imagePreviewContainer").innerHTML=(p.images||[]).map(src=>`<img src="${esc(src)}">`).join("");
+      $("adminProductFormTitle").textContent="পণ্য এডিট করুন";$("admProdSubmitBtn").textContent="আপডেট করুন";$("admProdCancelBtn").style.display="inline-flex";showPage("productForm");
+    };
+    window.cancelEditProduct=function(){$("adminProductForm").reset();$("admEditingProductId").value="";$("admProdBonus").value="0";selectedProductImages=[];$("imagePreviewContainer").innerHTML="";$("admProdSubmitBtn").textContent="পণ্য পাবলিশ করুন";$("admProdCancelBtn").style.display="none";};
+    window.deleteProduct=async function(id){if(!confirm("পণ্যটি ডিলিট করবেন?"))return;const {error}=await sb.from("products").delete().eq("id",id);if(error)alertBox("সমস্যা",error.message);else await loadAll();};
+    window.handleAdminAddBanner=async function(e){
+      e.preventDefault();if(!selectedBannerFile){alertBox("ত্রুটি","ব্যানার ছবি নির্বাচন করুন।");return;}
+      try{const url=await uploadImage(selectedBannerFile,"banners");const {error}=await sb.from("banners").insert([{image_url:url}]);if(error)throw error;
+        $("adminBannerForm").reset();$("bannerPreviewContainer").innerHTML="";selectedBannerFile=null;await loadAll();alertBox("সফল","নোটিশ ব্যানার প্রকাশ হয়েছে।");}
+      catch(err){alertBox("সমস্যা",err.message);}
+    };
+    window.closeAdminDetail=function(){showPage("users");};
+    window.showPage=function(name){document.querySelectorAll(".admin-page").forEach(p=>p.classList.remove("active"));const target=$("page"+name.charAt(0).toUpperCase()+name.slice(1));if(target)target.classList.add("active");window.scrollTo({top:0,behavior:"smooth"});};
+    function showDetail(title,html){$("adminDetailTitle").textContent=title;$("adminDetailContent").innerHTML=html;showPage("detail");}
+    
+    window.showAllUsers=function(){showPage("users");};
+    window.showAllProducts=function(){showPage("products");};
+    window.showUserHistory=function(userId){const u=users.find(x=>x.id===userId);if(!u)return;const history=orders.filter(o=>[u.email,u.auth_user_id,u.id,u.uid].filter(Boolean).some(v=>[o.user_email,o.user_id,o.auth_user_id,o.uid].filter(Boolean).includes(v)));showDetail((u.name||u.full_name||u.email||"ইউজার")+" — সম্পূর্ণ ইতিহাস",`<div class="serial-item-card"><b>নাম:</b> ${esc(u.name||u.full_name||"তথ্য নেই")}<div><b>ইমেইল:</b> ${esc(u.email||"তথ্য নেই")}</div><div><b>ফোন:</b> ${esc(u.phone||"তথ্য নেই")}</div><div><b>অর্ডার সংখ্যা:</b> ${history.length}</div></div>`+(history.map((o,i)=>`<div class="serial-item-card"><b>অর্ডার #${i+1}</b><div>পণ্য: ${esc(o.product_name||o.title||"তথ্য নেই")}</div><div>পরিমাণ: ৳${Number(o.amount||o.total||0)}</div><div>স্ট্যাটাস: ${esc(o.status||"তথ্য নেই")}</div><div>তারিখ: ${esc(o.created_at||"তথ্য নেই")}</div></div>`).join("")||"এই ইউজারের সঙ্গে মিলে এমন কোনো অর্ডার পাওয়া যায়নি।"));};
+    window.archiveOrder=async function(id){
+      if(!confirm("এই অর্ডারটি Archive করবেন?"))return;
+      const {error}=await sb.from("orders").update({archived:true,archived_at:new Date().toISOString()}).eq("id",id);
+      if(error)alertBox("সমস্যা",error.message);else await loadAll();
+    };
+    window.setOrderStatus=async function(id,status){
+      const order=orders.find(o=>o.id===id);if(!order||!status)return;
+      try{
+        const now=new Date();
+        const retentionFields=(status==="Confirmed"||status==="Approved")&&!order.confirmed_at?{confirmed_at:now,expires_at:new Date(now.getTime()+30*24*60*60*1000)}:{};
+        if((status==="Confirmed"||status==="Approved") && order.status!=="Approved" && !order.bonus_processed){
+          const phone=String(order.customer_phone||"").replace(/\D/g,"");
+          const buyer=users.find(x=>String(x.phone||"").replace(/\D/g,"")===phone);
+          const productBonus=(order.items||[]).reduce((sum,it)=>sum+Math.max(0,Number(it.bonus_amount||0))*Math.max(1,Number(it.qty||1)),0);
+          if(buyer && productBonus>0){const {error}=await sb.from("users").update({balance:Number(buyer.balance||0)+productBonus,history:[...(buyer.history||[]),{text:"পণ্য কেনার বোনাস",amount:productBonus}],updated_at:new Date().toISOString()}).eq("id",buyer.id);if(error)throw error;}
+          if(buyer && Number(order.amount||0)>=200 && !buyer.unlocked){const {error}=await sb.from("users").update({unlocked:true,updated_at:new Date().toISOString()}).eq("id",buyer.id);if(error)throw error;}
+          const refCode=String(order.referral_code||"").trim();let referralBonusPaid=false;
+          if(refCode){const refRows=await sb.from("referral_codes").select("*").eq("code",refCode);const sponsorUid=refRows.data?.[0]?.ownerUid;const sponsor=users.find(x=>x.id===sponsorUid);const alreadyCounted=orders.some(o=>o.id!==id&&String(o.referral_code||"").trim()===refCode&&String(o.customer_phone||"").replace(/\D/g,"")===phone&&o.status==="Approved");if(sponsor&&sponsor.id!==buyer?.id&&!alreadyCounted&&!order.referral_bonus_paid){const {error}=await sb.from("users").update({balance:Number(sponsor.balance||0)+100,refers:Number(sponsor.refers||0)+1,history:[...(sponsor.history||[]),{text:"সফল রেফার বোনাস",amount:100}],updated_at:new Date().toISOString()}).eq("id",sponsor.id);if(error)throw error;referralBonusPaid=true;}}
+          const mark=await sb.from("orders").update({status, ...retentionFields, bonus_processed:true,referral_bonus_paid:referralBonusPaid,updated_at:new Date().toISOString()}).eq("id",id);if(mark.error)throw mark.error;
+        } else {const {error}=await sb.from("orders").update({status, ...retentionFields, updated_at:new Date().toISOString()}).eq("id",id);if(error)throw error;}
+        await loadAll();alertBox("সফল",status==="Approved"?"অর্ডার অ্যাপ্রুভ হয়েছে। প্রযোজ্য বোনাস যোগ করা হয়েছে।":"অর্ডারের স্ট্যাটাস আপডেট হয়েছে।");
+      }catch(err){console.error(err);alertBox("সমস্যা",err.message||"অর্ডার আপডেট করা যায়নি।");}
+    };
+    window.setWithdrawalStatus=async function(id,status){const {error}=await sb.rpc("rsm_admin_set_withdrawal_status",{p_withdrawal_id:id,p_status:status});if(error)alertBox("সমস্যা",error.message);else await loadAll();};
+    window.firebaseOnAuthStateChanged(async user=>{if(!user)return;const row=await window.firebaseGetDoc(window.firebaseDoc(window.firebaseDbInstance,"admin_users",user.uid));if(row.exists()){$("adminLoginCard").style.display="none";$("adminDashboardContent").style.display="block";await loadAll();subscribeRealtime();}});
+  </script>
+</body>
+</html>
